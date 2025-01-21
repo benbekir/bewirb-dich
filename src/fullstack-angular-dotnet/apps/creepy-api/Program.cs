@@ -1,4 +1,7 @@
-var builder = WebApplication.CreateBuilder(args);
+using CreepyApi.Database;
+using Microsoft.EntityFrameworkCore;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -9,17 +12,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-  options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
-var app = builder.Build();
+builder.Services.AddDbContext<CreepyApiDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DbConnection"), new MySqlServerVersion("9.1.0")));
+
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 if (app.Environment.IsDevelopment())
 {
-  app.UseSwagger();
-  app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

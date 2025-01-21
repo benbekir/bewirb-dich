@@ -2,10 +2,13 @@
 
 namespace CreepyApi.Infrastructure;
 
-public interface Repository
+public interface IRepository
 {
     Dokument? Find(Guid id);
+
     List<Dokument> List();
+
     void Add(Dokument dokument);
+
     void Save();
 }

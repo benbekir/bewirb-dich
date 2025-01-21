@@ -1,31 +1,31 @@
-﻿using System.Reflection;
+﻿using CreepyApi.Domain;
+using CreepyApi.Infrastructure;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using CreepyApi.Domain;
-using CreepyApi.Infrastructure;
 
 namespace CreepyApi.Services;
 
-public class DokumenteService : Repository
+public class DokumenteService : IRepository
 {
     private static readonly string JSONPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "/dokumente.json";
-    
+
     static DokumenteService instance = null;
     private List<Dokument> dokumente = new List<Dokument>();
 
     public static DokumenteService Instance
+    {
+        get
         {
-            get
+            if (instance == null)
             {
-                if (instance == null)
-                {
-                    instance = new DokumenteService();
-                    instance.dokumente = LoadDokumenteFromJSON();
-                }
-
-                return instance;
+                instance = new DokumenteService();
+                instance.dokumente = LoadDokumenteFromJSON();
             }
+
+            return instance;
         }
+    }
 
     private static List<Dokument> LoadDokumenteFromJSON()
     {
@@ -67,4 +67,4 @@ public class DokumenteService : Repository
         var json = JsonSerializer.Serialize(dokumente);
         File.WriteAllText(JSONPath, json, new UTF8Encoding());
     }
-}   
+}
