@@ -1,16 +1,16 @@
-﻿using CreepyApi.Database.Models;
-using Newtonsoft.Json;
+﻿namespace CreepyApi.Database.Models;
 
-namespace CreepyApi.Domain;
-
-public class Dokument
+public class Document
 {
-    [JsonProperty]
-    public Guid Id { get; private set; }
+    public int Id { get; set; }
+
+    public Guid Uuid { get; set; }
 
     public Dokumenttyp Typ { get; set; }
 
     public Berechnungsart Berechnungsart { get; set; }
+
+    public Risiko Risiko { get; set; }
 
     /// <summary>
     /// Berechnungsart Umsatz => Jahresumsatz in Euro,
@@ -26,27 +26,9 @@ public class Dokument
     // Gibt es nur bei Unternehmen, die nach Umsatz abgerechnet werden
     public bool HatWebshop { get; set; }
 
-    public Risiko Risiko { get; set; }
-
     public decimal Beitrag { get; set; }
 
     public bool VersicherungsscheinAusgestellt { get; set; }
 
     public decimal Versicherungssumme { get; set; }
-
-    [JsonConstructor]
-    private Dokument()
-    {
-
-    }
-
-    public static Dokument Create()
-    {
-        Dokument dokument = new()
-        {
-            Id = Guid.NewGuid()
-        };
-
-        return dokument;
-    }
 }

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CreepyApi.Database.Models;
 
-public class DokumentConfiguration : IEntityTypeConfiguration<Dokument>
+public class DokumentConfiguration : IEntityTypeConfiguration<Document>
 {
-    public void Configure(EntityTypeBuilder<Dokument> builder)
+    public void Configure(EntityTypeBuilder<Document> builder)
     {
         builder.ToTable("dokumente")
             .HasKey(x => x.Id);
