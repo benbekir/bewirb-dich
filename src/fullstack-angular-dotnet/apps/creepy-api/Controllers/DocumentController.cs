@@ -1,14 +1,14 @@
-﻿using CreepyApi.DTOs;
+﻿using CreepyApi.Database;
+using CreepyApi.Database.Models;
+using CreepyApi.DTOs;
 using CreepyApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CreepyApi.Controllers;
 
 [Controller]
-public class DocumentController(ILoggerFactory loggerFactory, IDocumentService dokumenteService) : Controller
+public class DocumentController(CreepyApiDbContext dbContext, IDocumentService dokumenteService) : Controller
 {
-    private readonly Logger<DocumentController> _logger = new(loggerFactory);
-
     [HttpGet]
     [Route("/Dokumente")]
     public ActionResult<IEnumerable<DokumentenlisteEintragDto>> Get()
@@ -21,7 +21,13 @@ public class DocumentController(ILoggerFactory loggerFactory, IDocumentService d
     [Route("/Dokumente/{id}")]
     public ActionResult<DokumentenlisteEintragDto> GetById([FromRoute] Guid id)
     {
-        DokumentenlisteEintragDto result = dokumenteService.GetById(id);
+        Document? document = dbContext.Set<Document>().SingleOrDefault(x => x.Uuid.Equals(id));
+        if (document is null)
+        {
+            return NotFound("Das Dokument mit der ID " + id + " konnte nicht gefunden werden.");
+        }
+
+        DokumentenlisteEintragDto result = DokumentenlisteEintragDto.FromEntity(document);
         return Ok(result);
     }
 
@@ -33,21 +39,31 @@ public class DocumentController(ILoggerFactory loggerFactory, IDocumentService d
         return Ok();
     }
 
-    // TODO: use get
-    [HttpPost]
+    [HttpPut]
     [Route("/Dokumente/{id}/annehmen")]
     public ActionResult Accept([FromRoute] Guid id)
     {
-        dokumenteService.Accept(id);
+        Document? document = dbContext.Set<Document>().SingleOrDefault(x => x.Uuid.Equals(id));
+        if (document is null)
+        {
+            return NotFound("Das Dokument mit der ID " + id + " konnte nicht gefunden werden.");
+        }
+
+        dokumenteService.Accept(document);
         return Ok();
     }
 
-    // TODO: use get
-    [HttpPost]
+    [HttpPut]
     [Route("/Dokumente/{id}/ausstellen")]
     public ActionResult Export([FromRoute] Guid id)
     {
-        dokumenteService.Export(id);
+        Document? document = dbContext.Set<Document>().SingleOrDefault(x => x.Uuid.Equals(id));
+        if (document is null)
+        {
+            return NotFound("Das Dokument mit der ID " + id + " konnte nicht gefunden werden.");
+        }
+
+        dokumenteService.Export(document);
         return Ok();
     }
 }

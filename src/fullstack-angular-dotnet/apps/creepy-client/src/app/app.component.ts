@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import {HttpClient} from "@angular/common/http";
 import {ErstelleDokumentModalService} from "./erstelle-dokument/erstelle-dokument-modal.service";
 import {tap} from "rxjs";
 import {DokumentenlisteEintragDto} from "./models/dokument";
-import {environment} from "../environments/environment";
 import {CommonModule} from "@angular/common";
 import {ErstelleDokumentModal} from "./erstelle-dokument/erstelle-dokument-modal.component";
+import { HttpService } from './services/http.service';
 
 @Component({
   standalone: true,
@@ -20,7 +19,7 @@ export class AppComponent {
 
   selectedDocument: DokumentenlisteEintragDto | undefined
 
-  constructor(public http: HttpClient, private eDMService: ErstelleDokumentModalService ) {
+  constructor(public http: HttpService, private eDMService: ErstelleDokumentModalService ) {
     eDMService.saved.pipe(tap(() => {
       this.ladeDokumente()
     })).subscribe()
@@ -36,22 +35,22 @@ export class AppComponent {
   }
 
   async ladeDokumente() {
-    this.dokumente = (await this.http.get<DokumentenlisteEintragDto[]>(environment.baseurl + '/dokumente').toPromise()) || []
+    this.dokumente = (await this.http.getDocuments()) || [];
   }
 
   async selectedDocumentAnnehmen() {
     if(this.selectedDocument) {
-      await this.http.post<void>(environment.baseurl + '/dokumente/' + this.selectedDocument.id + '/annehmen', null).toPromise()
+      await this.http.acceptDocument(this.selectedDocument.id);
       this.selectedDocument = undefined;
-      await this.ladeDokumente()
+      await this.ladeDokumente();
 
     }
   }
   async selectedDocumentAusstellen() {
     if(this.selectedDocument) {
-      await this.http.post<void>(environment.baseurl + '/dokumente/' + this.selectedDocument.id + '/ausstellen', null).toPromise()
+      await this.http.exportDocument(this.selectedDocument.id);
       this.selectedDocument = undefined;
-      await this.ladeDokumente()
+      await this.ladeDokumente();
     }
   }
 }

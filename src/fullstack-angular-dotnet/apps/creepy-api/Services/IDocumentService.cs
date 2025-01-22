@@ -1,12 +1,12 @@
-﻿using CreepyApi.DTOs;
+﻿using CreepyApi.Database.Models;
+using CreepyApi.DTOs;
 
 namespace CreepyApi.Services;
 
 public interface IDocumentService
 {
     List<DokumentenlisteEintragDto> Get();
-    DokumentenlisteEintragDto GetById(Guid id);
     void Create(ErzeugeNeuesAngebotDto dto);
-    void Accept(Guid id);
-    void Export(Guid id);
+    void Accept(Document document);
+    void Export(Document document);
 }
